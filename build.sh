@@ -111,8 +111,6 @@ usage(){
 
 build_all(){
 	clean
-	init
-	
 	compila_moduli
 	crea_initramfs
 	compila_kernel
