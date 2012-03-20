@@ -1,14 +1,25 @@
 #!/bin/sh
+# author: Smando
+# mail: smando@gmail.com
+# build.sh 1.0
+
+#NOTA: Il kernel è sempre copreso dell'initramfs! dunque zImage == boot.img
+
+#TODO: dal boot.img bisogna creare il file .blob signato flashabile tramite partizione /stagin in CWM (solo kernel asus), per ora flashare con "dd if=/sdcard/boot.img of=/dev/block/mmcblk0 seek=3968 bs=4096 count=2048"
+
+
 #IMPOSTO DIRECTORY DI LAVORO
 export KERNELDIR=`readlink -f .`
 export INITRAMFS_SOURCE=`readlink -f $KERNELDIR/ramfs`
 export PARENT_DIR=`readlink -f ..`
+INITRAMFS_TMP="/tmp/initramfs-source"
+MODULI_TMP="/tmp/moduli-compilati"
 DATE=`date +%Y%m%d-%H%M`
 LOGFILE=$KERNELDIR/build-$DATE.log
 export CONFIG_DEFAULT_HOSTNAME=smandovm1
 export ARCH=arm
 export SUBARCH=arm
-export CROSS_COMPILE=/home/simone/Desktop/android-ndk-r7b/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-
+export CROSS_COMPILE=$PARENT_DIR/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-
 
 # input: 
 # $1 stringa di log
@@ -28,67 +39,100 @@ log(){
 
 clean(){
 	rm -Rf $KERNELDIR/build*.log
-	rm -Rf $KERNELDIR/arch/$ARCH/boot/zImage	
+	rm -Rf $KERNELDIR/arch/$ARCH/boot/zImage
+	rm -rf $INITRAMFS_TMP
+	rm -rf $INITRAMFS_TMP.cpio
+	rm -rf $MODULI_TMP
+	mkdir $INITRAMFS_TMP	
 }
 
-clean
-echo "Build log : $LOGFILE"
+init(){
+	echo "Build log : $LOGFILE"
+	touch $LOGFILE
+	(xterm -e tail -f $LOGFILE &)
 
-if [ "${1}" != "" ];then
-  export KERNELDIR=`readlink -f ${1}`
-fi
+	if [ ! -f $KERNELDIR/.config ];
+	then
+  		make tegra_smando_defconfig
+	fi
+	. $KERNELDIR/.config
+}
+compila_moduli(){
+	init
+	log "Compilo moduli aggiuntivi..." a
+	cd $KERNELDIR/
+	# compilo solo i moduli...
+	( nice -n 10 make -j4 modules || exit 1 ) >> $LOGFILE 2>> $LOGFILE
+
+	#ls -lah $KERNELDIR/arch/$ARCH/boot/zImage
+}
+
+copia_moduli(){
+	log "Copio i moduli in $MODULI_TMP..." a
+	mkdir $MODULI_TMP
+
+	find -name '*.ko' -exec cp -av {} $MODULI_TMP/ \; >> $LOGFILE 2>> $LOGFILE
+}
+
+crea_initramfs(){
+	log "Preparo l initramfs compresso(comprensivo di moduli)..." a
+
+	(
+	rm -rf $INITRAMFS_TMP
+	cp -ax $INITRAMFS_SOURCE $INITRAMFS_TMP
+	find $INITRAMFS_TMP -name .git -exec rm -rf {} \;
+	rm -rf $INITRAMFS_TMP/.hg
+	find -name '*.ko' -exec cp -av {} $INITRAMFS_TMP/lib/modules/ \;
+
+	cd $INITRAMFS_TMP
+	find | fakeroot cpio -H newc -o > $INITRAMFS_TMP.cpio 2>/dev/null
+	ls -lh $INITRAMFS_TMP.cpio
+	cd -
+	) >> $LOGFILE 2>> $LOGFILE
+}
+
+compila_kernel(){
+	log "Compilo il kernel+initramfs..." a
+	(
+
+	nice -n 10 make -j3 zImage CONFIG_INITRAMFS_SOURCE="$INITRAMFS_TMP.cpio" || exit 1
+
+	ls -lah $KERNELDIR/arch/$ARCH/boot/zImage
+	) >> $LOGFILE 2>> $LOGFILE
+
+	ls -lah $KERNELDIR/arch/$ARCH/boot/zImage
+}
+
+usage(){
+
+ echo "		build.sh moduli -> compila solo i moduli"
+ echo "		build.sh kern -> compila il kernel+moduli+initramfs" 
+}
+
+build_all(){
+	clean
+	init
+	
+	compila_moduli
+	crea_initramfs
+	compila_kernel
+}
+
+case $1 in
+	moduli )clean
+		compila_moduli
+		copia_moduli
+	;;
+	kern )build_all
+	;;
+	*)usage
+	;;
+
+esac
+
+log "Fine" a
 
 
-INITRAMFS_TMP="/tmp/initramfs-source"
-
-if [ ! -f $KERNELDIR/.config ];
-then
-  make tegra_smando_defconfig
-fi
-
-. $KERNELDIR/.config
-
-
-rm -rf $INITRAMFS_TMP
-rm -rf $INITRAMFS_TMP.cpio
-mkdir $INITRAMFS_TMP
-
-
-
-
-
-log "Compilo moduli aggiuntivi..." a
-cd $KERNELDIR/
-# compilo solo i moduli...
-( nice -n 10 make -j4 modules || exit 1 ) >> $LOGFILE 2>> $LOGFILE
-
-#ls -lah $KERNELDIR/arch/$ARCH/boot/zImage
-
-log "Preparo l initramfs compresso(comprensivo di moduli)..." a
-
-(
-rm -rf $INITRAMFS_TMP
-cp -ax $INITRAMFS_SOURCE $INITRAMFS_TMP
-find $INITRAMFS_TMP -name .git -exec rm -rf {} \;
-rm -rf $INITRAMFS_TMP/.hg
-find -name '*.ko' -exec cp -av {} $INITRAMFS_TMP/lib/modules/ \;
-
-cd $INITRAMFS_TMP
-find | fakeroot cpio -H newc -o > $INITRAMFS_TMP.cpio 2>/dev/null
-ls -lh $INITRAMFS_TMP.cpio
-cd -
-) >> $LOGFILE 2>> $LOGFILE
-
-log "Compilo il kernel+initramfs..." a
-(
-
-nice -n 10 make -j3 zImage CONFIG_INITRAMFS_SOURCE="$INITRAMFS_TMP.cpio" || exit 1
-
-ls -lah $KERNELDIR/arch/$ARCH/boot/zImage
-) >> $LOGFILE 2>> $LOGFILE
-
-ls -lah $KERNELDIR/arch/$ARCH/boot/zImage
-#TODO: ora bisogna creare il file .blob flashabile tramite partizione /stagin
 
 
 
