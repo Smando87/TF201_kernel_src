@@ -1,0 +1,54 @@
+compilo moduli aggiuntivi...
+  CHK     include/linux/version.h
+  CHK     include/generated/utsrelease.h
+make[1]: `include/generated/mach-types.h' is up to date.
+  CALL    scripts/checksyscalls.sh
+  Building modules, stage 2.
+  MODPOST 7 modules
+WARNING: drivers/net/wireless/bcmdhd/bcmdhd: 'bcmsdh_remove' exported twice. Previous export was in drivers/net/wireless/bcm4329/bcm4329.ko
+WARNING: drivers/net/wireless/bcmdhd/bcmdhd: 'bcmsdh_probe' exported twice. Previous export was in drivers/net/wireless/bcm4329/bcm4329.ko
+preparo l initramfs compresso...
+`./arch/arm/mach-tegra/baseband-xmm-power2.ko' -> `/tmp/initramfs-source/lib/modules/baseband-xmm-power2.ko'
+`./crypto/tcrypt.ko' -> `/tmp/initramfs-source/lib/modules/tcrypt.ko'
+`./drivers/usb/serial/baseband_usb_chr.ko' -> `/tmp/initramfs-source/lib/modules/baseband_usb_chr.ko'
+`./drivers/net/usb/raw_ip_net.ko' -> `/tmp/initramfs-source/lib/modules/raw_ip_net.ko'
+`./drivers/net/wireless/bcmdhd/bcmdhd.ko' -> `/tmp/initramfs-source/lib/modules/bcmdhd.ko'
+`./drivers/net/wireless/bcm4329/bcm4329.ko' -> `/tmp/initramfs-source/lib/modules/bcm4329.ko'
+`./drivers/scsi/scsi_wait_scan.ko' -> `/tmp/initramfs-source/lib/modules/scsi_wait_scan.ko'
+-rw-rw-r-- 1 simone simone 1.7M 2012-03-20 09:43 /tmp/initramfs-source.cpio
+/home/simone/mot/TF201_kernel_src
+compilo il kernel aggiungendo l initramfs...
+  CHK     include/linux/version.h
+  CHK     include/generated/utsrelease.h
+make[1]: `include/generated/mach-types.h' is up to date.
+  CALL    scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  GEN     usr/initramfs_data.cpio
+  AS      usr/initramfs_data.o
+  LD      usr/built-in.o
+  LD      vmlinux.o
+  MODPOST vmlinux.o
+  GEN     .version
+  CHK     include/generated/compile.h
+  UPD     include/generated/compile.h
+  CC      init/version.o
+  LD      init/built-in.o
+  LD      .tmp_vmlinux1
+  KSYM    .tmp_kallsyms1.S
+  AS      .tmp_kallsyms1.o
+  LD      .tmp_vmlinux2
+  KSYM    .tmp_kallsyms2.S
+  AS      .tmp_kallsyms2.o
+  LD      vmlinux
+  SYSMAP  System.map
+  SYSMAP  .tmp_System.map
+  OBJCOPY arch/arm/boot/Image
+  Kernel: arch/arm/boot/Image is ready
+  GZIP    arch/arm/boot/compressed/piggy.gzip
+  SHIPPED arch/arm/boot/compressed/lib1funcs.S
+  AS      arch/arm/boot/compressed/lib1funcs.o
+  AS      arch/arm/boot/compressed/piggy.gzip.o
+  LD      arch/arm/boot/compressed/vmlinux
+  OBJCOPY arch/arm/boot/zImage
+  Kernel: arch/arm/boot/zImage is ready
+-rwxrwxr-x 1 simone simone 5.2M 2012-03-20 09:43 /home/simone/mot/TF201_kernel_src/arch/arm/boot/zImage
