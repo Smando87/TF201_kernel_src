@@ -1,7 +1,11 @@
 /*
  * Automatically generated C config: don't edit
  * Linux/arm 2.6.39.4 Kernel Configuration
+<<<<<<< HEAD
  * Wed Mar 14 22:56:11 2012
+=======
+ * Wed Mar 14 07:02:06 2012
+>>>>>>> 7c86da25baf13228f641a236ee49c0e289bc0b4a
  */
 #define CONFIG_RING_BUFFER 1
 #define CONFIG_NF_CONNTRACK_H323 1
@@ -76,6 +80,10 @@
 #define CONFIG_HAVE_ARM_SCU 1
 #define CONFIG_MPU_SENSORS_AMI306 1
 #define CONFIG_SENSORS_TEGRA_TSENSOR 1
+<<<<<<< HEAD
+=======
+#define CONFIG_JFS_FS 1
+>>>>>>> 7c86da25baf13228f641a236ee49c0e289bc0b4a
 #define CONFIG_XFRM_IPCOMP 1
 #define CONFIG_CRYPTO_RNG2 1
 #define CONFIG_NETFILTER_NETLINK_QUEUE 1
@@ -120,6 +128,10 @@
 #define CONFIG_ENABLE_MUST_CHECK 1
 #define CONFIG_NLS_CODEPAGE_437 1
 #define CONFIG_NET_CLS_U32 1
+<<<<<<< HEAD
+=======
+#define CONFIG_EXPORTFS 1
+>>>>>>> 7c86da25baf13228f641a236ee49c0e289bc0b4a
 #define CONFIG_AD525X_DPOT_I2C 1
 #define CONFIG_ARM_GIC 1
 #define CONFIG_SERIO 1
@@ -215,6 +227,10 @@
 #define CONFIG_NETDEVICES 1
 #define CONFIG_NET_KEY 1
 #define CONFIG_IOSCHED_DEADLINE 1
+<<<<<<< HEAD
+=======
+#define CONFIG_INITRAMFS_ROOT_GID 0
+>>>>>>> 7c86da25baf13228f641a236ee49c0e289bc0b4a
 #define CONFIG_CGROUP_FREEZER 1
 #define CONFIG_CPU_TLB_V7 1
 #define CONFIG_EVENTFD 1
@@ -405,6 +421,10 @@
 #define CONFIG_FS_MBCACHE 1
 #define CONFIG_RTC_CLASS 1
 #define CONFIG_BCMDHD_NVRAM_PATH "/data/misc/wifi/nvram.txt"
+<<<<<<< HEAD
+=======
+#define CONFIG_INITRAMFS_ROOT_UID 0
+>>>>>>> 7c86da25baf13228f641a236ee49c0e289bc0b4a
 #define CONFIG_TEGRA_USB_MODEM_POWER 1
 #define CONFIG_HAVE_FUNCTION_TRACER 1
 #define CONFIG_NF_NAT_TFTP 1
@@ -509,6 +529,10 @@
 #define CONFIG_PREEMPT_RCU 1
 #define CONFIG_NF_NAT_NEEDED 1
 #define CONFIG_SND_DRIVERS 1
+<<<<<<< HEAD
+=======
+#define CONFIG_XFS_FS 1
+>>>>>>> 7c86da25baf13228f641a236ee49c0e289bc0b4a
 #define CONFIG_USB_ULPI_VIEWPORT 1
 #define CONFIG_LOCKDEP_SUPPORT 1
 #define CONFIG_NO_HZ 1
@@ -557,7 +581,11 @@
 #define CONFIG_DEBUG_KERNEL 1
 #define CONFIG_COMPAT_BRK 1
 #define CONFIG_MPU_SENSORS_KXTF9 1
+<<<<<<< HEAD
 #define CONFIG_LOCALVERSION "smando@ubuntu"
+=======
+#define CONFIG_LOCALVERSION "smando"
+>>>>>>> 7c86da25baf13228f641a236ee49c0e289bc0b4a
 #define CONFIG_MACH_NO_WESTBRIDGE 1
 #define CONFIG_TEGRA_BB_XMM_POWER2_MODULE 1
 #define CONFIG_CRYPTO 1
@@ -653,7 +681,11 @@
 #define CONFIG_FRAME_WARN 1024
 #define CONFIG_USB_NET_CDC_NCM 1
 #define CONFIG_GENERIC_HWEIGHT 1
+<<<<<<< HEAD
 #define CONFIG_INITRAMFS_SOURCE ""
+=======
+#define CONFIG_INITRAMFS_SOURCE "/home/simone/mot/TF201-Kernel/ramfs/"
+>>>>>>> 7c86da25baf13228f641a236ee49c0e289bc0b4a
 #define CONFIG_SND_HDA_CODEC_SIGMATEL 1
 #define CONFIG_CGROUPS 1
 #define CONFIG_MMC 1
@@ -752,6 +784,10 @@
 #define CONFIG_FLATMEM 1
 #define CONFIG_PAGEFLAGS_EXTENDED 1
 #define CONFIG_IKCONFIG 1
+<<<<<<< HEAD
+=======
+#define CONFIG_INITRAMFS_COMPRESSION_NONE 1
+>>>>>>> 7c86da25baf13228f641a236ee49c0e289bc0b4a
 #define CONFIG_SYSCTL 1
 #define CONFIG_USB_HOTPLUG 1
 #define CONFIG_LOCAL_TIMERS 1
