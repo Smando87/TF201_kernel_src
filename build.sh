@@ -107,6 +107,7 @@ usage(){
 
  echo "		build.sh moduli -> compila solo i moduli"
  echo "		build.sh kern -> compila il kernel+moduli+initramfs" 
+ echo "		build.sh pulisci -> pulisci tutto"
 }
 
 build_all(){
@@ -116,12 +117,19 @@ build_all(){
 	compila_kernel
 }
 
+puliscitutto(){
+	clean
+	make clean	
+}
+
 case $1 in
 	moduli )clean
 		compila_moduli
 		copia_moduli
 	;;
 	kern )build_all
+	;;
+	pulisci )puliscitutto
 	;;
 	*)usage
 	;;
