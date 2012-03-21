@@ -1,7 +1,7 @@
 /*
  * Automatically generated C config: don't edit
  * Linux/arm 2.6.39.4 Kernel Configuration
- * Tue Mar 20 11:43:51 2012
+ * Tue Mar 20 13:22:22 2012
  */
 #define CONFIG_RING_BUFFER 1
 #define CONFIG_NF_CONNTRACK_H323 1
@@ -334,6 +334,7 @@
 #define CONFIG_SERIAL_CORE_CONSOLE 1
 #define CONFIG_CIFS_WEAK_PW_HASH 1
 #define CONFIG_USB_HID 1
+#define CONFIG_IOSCHED_SIO_MODULE 1
 #define CONFIG_REGULATOR_MAX77663 1
 #define CONFIG_ANDROID 1
 #define CONFIG_NET_SCH_INGRESS 1
@@ -840,6 +841,7 @@
 #define CONFIG_RCU_FANOUT 32
 #define CONFIG_BITREVERSE 1
 #define CONFIG_DEVPORT 1
+#define CONFIG_IOSCHED_BFQ_MODULE 1
 #define CONFIG_USB_SERIAL_WWAN 1
 #define CONFIG_VIDEO_V4L2_COMMON 1
 #define CONFIG_FB_MODE_HELPERS 1

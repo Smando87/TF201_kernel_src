@@ -3,12 +3,16 @@
 # mail: smando@gmail.com
 # build.sh 1.0
 
-#NOTA: Il kernel è sempre copreso dell'initramfs! dunque zImage == boot.img
+#NOTA: L'initramfs è compreso nel kernel! dunque zImage == boot.img
 
-#TODO: dal boot.img bisogna creare il file .blob signato flashabile tramite partizione /stagin in CWM (solo kernel asus), per ora flashare con "dd if=/sdcard/boot.img of=/dev/block/mmcblk0 seek=3968 bs=4096 count=2048"
+#NOTA: recovery.img non è compresa nel kernel!!
+
+#NOTA: Per ora flashare con "dd if=/sdcard/boot.img of=/dev/block/mmcblk0 seek=3968 bs=4096 count=2048"
+
+#TODO: dal boot.img bisogna creare il file .blob signato flashabile tramite partizione /stagin in CWM (solo kernel asus) 
 
 
-#IMPOSTO DIRECTORY DI LAVORO
+#VARIABILI
 export KERNELDIR=`readlink -f .`
 export INITRAMFS_SOURCE=`readlink -f $KERNELDIR/ramfs`
 export PARENT_DIR=`readlink -f ..`
@@ -21,7 +25,8 @@ export ARCH=arm
 export SUBARCH=arm
 export CROSS_COMPILE=$PARENT_DIR/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-
 
-# input: 
+
+# log($1,$2) 
 # $1 stringa di log
 # $2 tipo di log (v=video, f=file, a=v+f)
 log(){
@@ -37,19 +42,23 @@ log(){
 	fi	
 }
 
+#Pulisce log+initramfs+moduli+zImage
 clean(){
 	rm -Rf $KERNELDIR/build*.log
 	rm -Rf $KERNELDIR/arch/$ARCH/boot/zImage
+	rm -Rf $KERNELDIR/boot.img
+	
 	rm -rf $INITRAMFS_TMP
 	rm -rf $INITRAMFS_TMP.cpio
 	rm -rf $MODULI_TMP
 	mkdir $INITRAMFS_TMP	
 }
 
+
 init(){
 	echo "Build log : $LOGFILE"
 	touch $LOGFILE
-	(xterm -e tail -f $LOGFILE &)
+	(gnome-terminal -t $LOGFILE --tab-with-profile=Default -e "tail -f $LOGFILE" &)
 
 	if [ ! -f $KERNELDIR/.config ];
 	then
@@ -57,6 +66,7 @@ init(){
 	fi
 	. $KERNELDIR/.config
 }
+
 compila_moduli(){
 	init
 	log "Compilo moduli aggiuntivi..." a
@@ -100,21 +110,30 @@ compila_kernel(){
 	ls -lah $KERNELDIR/arch/$ARCH/boot/zImage
 	) >> $LOGFILE 2>> $LOGFILE
 
-	ls -lah $KERNELDIR/arch/$ARCH/boot/zImage
+	mv $KERNELDIR/arch/$ARCH/boot/zImage $KERNELDIR/boot.img
 }
 
 usage(){
 
- echo "		build.sh moduli -> compila solo i moduli"
+ echo "		build.sh moduli -> compila i moduli"
+ echo "		build.sh moduli+installa -> compila i moduli e gli installa"
  echo "		build.sh kern -> compila il kernel+moduli+initramfs" 
+ echo "		build.sh kern+flash -> compila il kernel+moduli+initramfs e flasha il kernel"
  echo "		build.sh pulisci -> pulisci tutto"
 }
 
 build_all(){
-	clean
+	
 	compila_moduli
 	crea_initramfs
 	compila_kernel
+}
+
+
+installa_moduli(){
+	log "Installo i moduli sul TF201..." a
+	adb remount
+	adb push $MODULI_TMP/* /data/local/modules/
 }
 
 puliscitutto(){
@@ -122,16 +141,40 @@ puliscitutto(){
 	make clean	
 }
 
+flash_kernel(){
+		log "Riavvio in recovery per flash kernel..." a
+		adb reboot recovery
+		log "Attendo 20s..." a
+		sleep 20
+		log "Copio boot.img su sdcard..." a
+		adb push $KERNELDIR/boot.img /sdcard/boot.img
+		log "Flasho tramite dd..." a
+		adb shell dd if=/sdcard/boot.img of=/dev/block/mmcblk0 seek=3968 bs=4096 count=2048
+		log "Fatto!?Riavvio..." a
+		adb reboot
+	
+
+}
 case $1 in
-	moduli )clean
-		compila_moduli
-		copia_moduli
+	moduli ) clean
+		 compila_moduli
+		 copia_moduli
 	;;
-	kern )build_all
+	moduli+installa) clean
+		 	 compila_moduli
+		 	 copia_moduli
+			 installa_moduli
 	;;
-	pulisci )puliscitutto
+	kern )  clean
+		build_all
 	;;
-	*)usage
+	kern+flash ) clean
+		     build_all
+		     flash_kernel	
+	;;
+	pulisci ) puliscitutto
+	;;
+	*) usage
 	;;
 
 esac
