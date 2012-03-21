@@ -1,7 +1,7 @@
 #!/bin/sh
 # author: Smando
 # mail: smando@gmail.com
-# build.sh 1.0
+# build.sh 0.9
 
 #NOTA: L'initramfs è compreso nel kernel! dunque zImage == boot.img
 
